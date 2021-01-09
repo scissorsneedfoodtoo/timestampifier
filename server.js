@@ -15,15 +15,21 @@ app.get('/', (__, res) => {
 });
 
 app.get('/api/timestamp/:date?', (req, res) => {
-  const param = req.params.date ? req.params.date : dayjs().toString();
+  const param = req.params.date ? req.params.date : '';
   const re = /^\d+$/;
   const isTimestamp = param.match(re);
-  const dateObj = dayjs(isTimestamp ? parseInt(param) : param);
-  const utc = dateObj.toString();
-  const unix = dateObj.valueOf();
+  let dateObj;
+
+  if (param) {
+    dateObj = dayjs(isTimestamp ? parseInt(param) : param);
+  } else {
+    dateObj = dayjs();
+  }
 
   if (dateObj.isValid()) {
-    console.log({ unix, utc });
+    const utc = dateObj.toString();
+    const unix = dateObj.valueOf();
+
     res.json({ unix, utc });
   } else {
     res.json({ error: 'Invalid Date' });
